@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# A script that handles backing up the dot files
+# This script is called in .bashrc so it runs every time a 
+# bash terminal is opened. 
+
+#declare constants
+WHITE='\033[1;37m'
+NOCOLOR='\033[0m'
+NUMBEROFFILESUPDATED=0
+#declare variable
+
+#Run backups if we are on the master desktop.
+if [[ $MASTERDESKTOP == "true" ]]; then
+    if [[ $(wc -l < ~/.vimrc) != $(wc -l < ~/Documents/codeProjects/configurationFiles/vimrc) ]]; then
+         cat ~/.vimrc > ~/Documents/codeProjects/configurationFiles/vimrc
+         echo "Vimrc has been backed up."
+         NUMBEROFFILESUPDATED=$((NUMBEROFFILESUPDATED+1))
+    fi
+
+    if [[ $(wc -l < ~/.bashrc) != $(wc -l < ~/Documents/codeProjects/configurationFiles/bashrc) ]]; then
+         cat ~/.bashrc > ~/Documents/codeProjects/configurationFiles/bashrc
+         echo "Bashrc has been backed up."
+         NUMBEROFFILESUPDATED=$((NUMBEROFFILESUPDATED+1))
+    fi
+    if [[ $(wc -l < ~/.tmux.conf) != $(wc -l < ~/Documents/codeProjects/configurationFiles/tmux.conf) ]]; then
+         cat ~/.tmux.conf > ~/Documents/codeProjects/configurationFiles/tmux.conf
+         echo "Tmux.conf has been backed up."
+         NUMBEROFFILESUPDATED=$((NUMBEROFFILESUPDATED+1))
+    fi
+
+    if [[ $NUMBEROFFILESUPDATED > 0 ]]; then
+        echo -e "${WHITE}backUpDotFiles has been executed by .bashrc. $NUMBEROFFILESUPDATED files have been updated${NOCOLOR}"
+    fi
+else
+    echo "Currently not on the masterDesktop"
+    echo "Backup did not run"
+fi

@@ -1,0 +1,96 @@
+#!/bin/bash
+
+#tmuxboot: --> A script for opening a tmux enviornment for development
+
+#declare constants
+WHITE='\033[1;37m'
+NOCOLOR='\033[0m'
+
+#declare variable
+session="dev"
+newSession="Y"
+extension=""
+
+
+# check if we passed an argument after tmuxboot
+if [[ "$1" == "a" ]]; then
+    tmux a
+    exit 0
+#if the argument we passed is "ls" run tmux ls
+elif [[ "$1" == "ls" ]]; then
+    tmux ls 
+    #check the exit code. if it is not a success we exit
+    if [[ $? != 0 ]]; then
+        echo -e "${WHITE}There are no sessions open${NOCOLOR}"
+        exit 1
+    fi
+    echo -e "${WHITE}type the session you would like to connect to"
+    echo -n -e "-->${NOCOLOR}"
+    read session
+    if [[ -z $session ]]; then
+        echo -e "${WHITE}No session entered. Exiting...${NOCOLOR}"
+        exit 1
+    fi
+elif [[ "$1" ]]; then
+    # set session variable to the argument
+    session="${1%.*}"
+    sessionlength=${#session}
+    sessionlengthPlusOne=$(($sessionlength+1))
+    extensionLength=$((${#1}-$sessionlengthPlusOne))
+    extension="${1:$sessionlengthPlusOne:$extensionLength}"
+fi
+
+# check if the session existes, discarding output
+# We can check $? for the exit status, 0 for success non 0 for failure
+tmux has-session -t $session 2>/dev/null
+
+if [[ $? != 0 ]]; then
+    # set up a new session
+    echo -e "${WHITE}There is no ${session}. Create one now? (Y/N)"
+    echo -n -e "-->${NOCOLOR}"
+    read newSession
+    if [[ $newSession == "Y" || $newSession == "y"  ]]; then
+
+        #----------
+        #----------
+
+        tmux new-session -d -s $session
+        tmux rename-window "$session"
+        tmux select-window -t $session:0
+
+ # This is sized for the current settings on my left monitor on my desktop
+ # This is almost certainly something anyone would need to adjust for their
+ # setup.
+        if [[ $MASTERDESKTOP == "true" ]]; then
+            tmux resize-window -y 76
+            tmux resize-window -x 282
+        fi
+        tmux split-window -h
+        tmux selectp -t 0
+        tmux split-window -v
+        tmux send-keys "clear && ls" C-m
+        tmux selectp -t 0
+        tmux resize-pane -R 70
+        tmux resize-pane -D 30
+        tmux selectp -t 2
+        tmux split-window -v
+        tmux selectp -t 0
+        if [[ $extension == "js" ]]; then
+            tmux send-keys "vim $1" C-m
+        fi
+    else
+        echo -e "${WHITE}No session created"
+        exit 0
+    fi
+fi
+
+
+
+#attach to our session
+tmux attach-session -t $session
+
+
+# These lines will help edit the "tmux resize-window" command
+
+#56789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 12345
+#      0          1           2       3        4          5          6          7           8      9         10         11       12        13          14      15         16       17       18                  20                                                25       255
