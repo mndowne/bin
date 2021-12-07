@@ -62,18 +62,24 @@ if [[ $? != 0 ]]; then
  # This is almost certainly something anyone would need to adjust for their
  # setup.
         if [[ $MASTERDESKTOP == "true" ]]; then
-            tmux resize-window -y 76
-            tmux resize-window -x 282
+            tmux resize-window -y 78
+            tmux resize-window -x 284
         fi
         tmux split-window -h
+        if [[  -f $HOME/Documents/.todo.txt.swp ]]; then
+            tmux send-keys "echo 'todo.txt open in another locations'" C-m
+        else
+            tmux send-keys "vim ~/Documents/todo.txt" C-m
+        fi
         tmux selectp -t 0
         tmux split-window -v
         tmux send-keys "clear && ls" C-m
         tmux selectp -t 0
         tmux resize-pane -R 70
-        tmux resize-pane -D 30
+        tmux resize-pane -D 28
         tmux selectp -t 2
         tmux split-window -v
+        tmux send-keys "git status" C-m
         tmux selectp -t 0
         if [[ $extension == "js" ]]; then
             tmux send-keys "vim $1" C-m

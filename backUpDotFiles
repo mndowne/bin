@@ -7,11 +7,14 @@
 #declare constants
 WHITE='\033[1;37m'
 NOCOLOR='\033[0m'
-NUMBEROFFILESUPDATED=0
 #declare variable
+NUMBEROFFILESUPDATED=0
 
 #Run backups if we are on the master desktop.
 if [[ $MASTERDESKTOP == "true" ]]; then
+
+# config files --- config files --
+# --------------------------------
     if [[ $(wc -l < ~/.vimrc) != $(wc -l < ~/Documents/codeProjects/configurationFiles/vimrc) ]]; then
          cat ~/.vimrc > ~/Documents/codeProjects/configurationFiles/vimrc
          echo "Vimrc has been backed up."
@@ -28,6 +31,12 @@ if [[ $MASTERDESKTOP == "true" ]]; then
          echo "Tmux.conf has been backed up."
          NUMBEROFFILESUPDATED=$((NUMBEROFFILESUPDATED+1))
     fi
+    if [[ $(wc -l < ~/.profile ) != $(wc -l < ~/Documents/codeProjects/configurationFiles/profile ) ]]; then
+         cat ~/.profile > ~/Documents/codeProjects/configurationFiles/profile
+         echo "profile has been backed up."
+         NUMBEROFFILESUPDATED=$((NUMBEROFFILESUPDATED+1))
+    fi
+
 
     if [[ $NUMBEROFFILESUPDATED > 0 ]]; then
         echo -e "${WHITE}backUpDotFiles has been executed by .bashrc. $NUMBEROFFILESUPDATED files have been updated${NOCOLOR}"
