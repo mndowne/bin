@@ -50,21 +50,11 @@ if [[ $? != 0 ]]; then
     echo -n -e "-->${NOCOLOR}"
     read newSession
     if [[ $newSession == "Y" || $newSession == "y"  ]]; then
-
-        #----------
-        #----------
-
         tmux new-session -d -s $session
         tmux rename-window "$session"
         tmux select-window -t $session:0
-
- # This is sized for the current settings on my left monitor on my desktop
- # This is almost certainly something anyone would need to adjust for their
- # setup.
-        if [[ $MASTERDESKTOP == "true" ]]; then
-            tmux resize-window -y 78
-            tmux resize-window -x 284
-        fi
+        tmux resize-window -y $LINES
+        tmux resize-window -x $COLUMNS
         tmux split-window -h
         if [[  -f $HOME/Documents/.todo.txt.swp ]]; then
             tmux send-keys "echo 'todo.txt open in another locations'" C-m
@@ -75,10 +65,11 @@ if [[ $? != 0 ]]; then
         tmux split-window -v
         tmux send-keys "clear && ls" C-m
         tmux selectp -t 0
-        tmux resize-pane -R 70
-        tmux resize-pane -D 28
+        tmux resize-pane -R $(( $COLUMNS / 4 ))
+        tmux resize-pane -D $(( $LINES / 3 ))
         tmux selectp -t 2
         tmux split-window -v
+        tmux send-keys "git pull" C-m
         tmux send-keys "git status" C-m
         tmux selectp -t 0
         if [[ $extension == "js" ]]; then
